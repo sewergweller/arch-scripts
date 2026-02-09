@@ -104,8 +104,9 @@ _uninstall() {
 }
 
 ## Updates all packages associated to a given AUR package.
-## $1 is path to a directory containing a PKGBUILD file.
-_update_by_path() {
+## $1 is the name of an AUR package as given in the AUR to a directory
+## containing a PKGBUILD file.
+_update() {
    # Skip anything that isn't a directory.
    if [ ! -d "${AUR_REPO_DIR}/$1" ]; then
       echo "[ERR] No directory \`$1\`!"
@@ -122,6 +123,7 @@ _update_by_path() {
    cd "${AUR_REPO_DIR}/$1"
    # Avoid rebuilding the package if there are no updates available.
    if [ ! -z "$(git pull origin master | grep -x 'Already up to date.')" ]; then
+      echo "Package \`$1\` already up to date."
       cd "$ORIG"
       return
    fi
@@ -149,7 +151,8 @@ _update_by_path() {
 ## Upgrades all AUR packages within `$AUR_REPO_DIR`.
 _update_all() {
    for repo in $(ls $AUR_REPO_DIR); do
-      _update_by_path "$repo"
+      _update "$repo"
+      echo ""
    done
 }
 
@@ -175,7 +178,7 @@ case $1 in
          _update_all
       else
          echo "Updating \`$2\`..."
-         _update_by_path "$2"
+         _update "$2"
       fi
    ;;
    *)
