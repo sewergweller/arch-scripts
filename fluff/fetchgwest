@@ -29,7 +29,7 @@ _pipx=0
 if [ -f "$(which pipx)" ]; then
    _pipx=`pipx list | grep -oP "package .* \d+\.\d+\.\d+," | wc -l`
 fi
-PACKGE="$((_pacman + _flatpak + _aur + _pipx))"
+PACKGE="$((_pacman + _flatpak + _pipx))"
 
 WINDOW=""
 if [ ! -z "$XDG_CURRENT_DESKTOP" ]; then
