@@ -4,7 +4,6 @@
 ###########
 BASE_SPACE="      "
 BOX="~"
-AUR_LIST_CMD='malgware list'
 
 NC='\033[0m'
 RED='\033[1;31m'
@@ -25,10 +24,6 @@ _pacman=`pacman -Qq | wc -l`
 _flatpak=0
 if [ -f "$(which flatpak)" ]; then
    _flatpak=`flatpak list | wc -l`
-fi
-_aur=0
-if [ -f "$(which ${AUR_LIST_CMD%% *})" ]; then
-   _aur=`$AUR_LIST_CMD | wc -l`
 fi
 _pipx=0
 if [ -f "$(which pipx)" ]; then

@@ -29,7 +29,7 @@ notify_new_update() {
    fi
 
    # Notify the user that it's time to update!
-   notify-send "Updates!" "Remember to run \`updates do\` soon!"
+   notify-send "Updates!" "Remember to run \`forgwtful do\` soon!"
 }
 
 # Remove orphaned packages and unused dependencies.
