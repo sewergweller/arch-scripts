@@ -4,6 +4,7 @@
 ################
 DATEFILE="${HOME}/.local/state/last_sys_update"
 AUR_UPDATE_CMD="malgware update"
+CACHE_CLEAR_ALL="yes"
 
 ## Constants
 ############
@@ -36,6 +37,14 @@ notify_new_update() {
 remove_unused() {
    echo "Removing orphans and their unused dependencies..."
    sudo pacman -Qdtq | sudo pacman -Rs -
+
+   echo "Cleaning pacman cache up..."
+   # Failed downloads may leave partial artifacts behind.
+   sudo rm -rf /var/cache/pacman/pkg/download-*
+   # `-Sc` clear all cache entries for unused packages (old versions, uninstalled)
+   # `-Scc` just deletes everything.
+   [ "$CACHE_CLEAR_ALL" = "unused" ] && sudo pacman -Sc || sudo pacman -Scc
+
    # Also preserves only the latest 2 ProtonGE versions.
    while IFS= read -r line; do
       OLDGE="$(echo $line | xargs echo)"
