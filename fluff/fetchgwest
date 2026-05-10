@@ -22,11 +22,11 @@ DISTRO=`cat /etc/os-release | grep -x 'ID=.*'` \
 
 _pacman=`pacman -Qq | wc -l`
 _flatpak=0
-if [ -f "$(which flatpak)" ]; then
+if [ ! -z "$(command -v flatpak)" ]; then
    _flatpak=`flatpak list | wc -l`
 fi
 _pipx=0
-if [ -f "$(which pipx)" ]; then
+if [ ! -z "$(command -v pipx)" ]; then
    _pipx=`pipx list | grep -oP "package .* \d+\.\d+\.\d+," | wc -l`
 fi
 PACKGE="$((_pacman + _flatpak + _pipx))"

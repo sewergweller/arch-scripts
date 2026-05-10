@@ -2,9 +2,16 @@
 
 ## Configuration
 ################
+# Saves the date when the last update was performed.
 DATEFILE="${HOME}/.local/state/last_sys_update"
+# Command to update all AUR packages.
 AUR_UPDATE_CMD="malgware update"
+# Whether to clear all pacman cache entries (yes) or just the ones for old
+# packages.
 CACHE_CLEAR_ALL="yes"
+# If you're gaming on this system, it's recommended to use ProtonPlus to
+# manage Proton versions.
+PROTONPLUS_BIN='flatpak run com.vysp3r.ProtonPlus'
 
 ## Constants
 ############
@@ -12,6 +19,23 @@ CURR_S=`date "+%s"`
 HOUR_S=$((60*60))
 DAY_S=$((24*HOUR_S))
 WEEK_S=$((7*DAY_S))
+
+## Helpers
+##########
+# $1: id of the flatpak package to verify.
+_installed_from_flatpak() {
+   # If a flatpak is installed, `command -v` will return 2 lines:
+   # - The first for flatpak itself, ended in "/flatpak".
+   # - The second for the flatpak package.
+   # No second line means the flatpak is not installed.
+   # No lines are returned if flatpak is not installed either.
+   if [ ! -z "$(command -v flatpak run $1 | grep -vE '/flatpak$')" ]; then
+      return 0
+   else
+      return 1
+   fi
+}
+
 
 # Notify the user if a week has passed since the last update.
 notify_new_update() {
@@ -44,13 +68,6 @@ remove_unused() {
    # `-Sc` clear all cache entries for unused packages (old versions, uninstalled)
    # `-Scc` just deletes everything.
    [ "$CACHE_CLEAR_ALL" = "unused" ] && sudo pacman -Sc || sudo pacman -Scc
-
-   # Also preserves only the latest 2 ProtonGE versions.
-   while IFS= read -r line; do
-      OLDGE="$(echo $line | xargs echo)"
-      echo "Removing old ProtonGE version: $OLDGE..."
-      echo "Y" | protonup -r "$OLDGE" > /dev/null
-   done < <(protonup -l | tail -n +3 | awk '{print $1}')
 }
 
 # Run updates.
@@ -58,17 +75,25 @@ do_new_update() {
    echo "Running system updates..."
    sudo pacman -Syu
    echo ""
+
    echo "=========================="
    echo "Updating AUR packages..."
    $AUR_UPDATE_CMD
    echo ""
-   echo "=========================="
-   echo "Running flatpak updates..."
-   flatpak update
-   echo ""
-   echo "=========================="
-   echo "Installing new ProtonGE..."
-   echo "Y" | protonup
+
+   if [ ! -z "$(command -v flatpak)" ]; then
+      echo "=========================="
+      echo "Running flatpak updates..."
+      flatpak update
+      echo ""
+   fi
+
+   if _installed_from_flatpak ${PROTONPLUS_BIN##* }; then
+      echo "=========================="
+      echo "Updating all Proton versions..."
+      $PROTONPLUS_BIN update all
+   fi
+
    echo $((CURR_S - (CURR_S % DAY_S) - HOUR_S)) > $DATEFILE
 }
 
