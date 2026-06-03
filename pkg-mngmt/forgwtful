@@ -72,6 +72,10 @@ remove_unused() {
 
 # Run updates.
 do_new_update() {
+   echo "Updating Arch repository mirror list..."
+   reflector @/etc/xdg/reflector/reflector.conf
+
+   echo "=========================="
    echo "Running system updates..."
    sudo pacman -Syu
    echo ""
