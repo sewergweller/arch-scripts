@@ -54,7 +54,7 @@ notify_new_update() {
    fi
 
    # Notify the user that it's time to update!
-   notify-send "Updates!" "Remember to run \`forgwtful do\` soon!"
+   notify-send "Updates!" "Remember to run \`${0##*/} do\` soon!"
 }
 
 # Remove orphaned packages and unused dependencies.
@@ -62,6 +62,8 @@ remove_unused() {
    echo "Removing orphans and their unused dependencies..."
    sudo pacman -Qdtq | sudo pacman -Rs -
 
+   echo ""
+   echo "=========================="
    echo "Cleaning pacman cache up..."
    # Failed downloads may leave partial artifacts behind.
    sudo rm -rf /var/cache/pacman/pkg/download-*
@@ -74,26 +76,26 @@ remove_unused() {
 do_new_update() {
    echo "Updating Arch repository mirror list..."
    sudo reflector @/etc/xdg/reflector/reflector.conf
-   echo ""
 
+   echo ""
    echo "=========================="
    echo "Running system updates..."
    sudo pacman -Syu
-   echo ""
 
+   echo ""
    echo "=========================="
    echo "Updating AUR packages..."
    $AUR_UPDATE_CMD
-   echo ""
 
    if [ ! -z "$(command -v flatpak)" ]; then
+      echo ""
       echo "=========================="
       echo "Running flatpak updates..."
       flatpak update
-      echo ""
    fi
 
    if _installed_from_flatpak ${PROTONPLUS_BIN##* }; then
+      echo ""
       echo "=========================="
       echo "Updating all Proton versions..."
       $PROTONPLUS_BIN update all

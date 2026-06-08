@@ -20,6 +20,10 @@ KERNEL=`uname -r | grep -oP '(\d+\.\d+\.\d+)(?=-.*)'`
 DISTRO=`cat /etc/os-release | grep -x 'ID=.*'` \
    && DISTRO="${DISTRO#*=}" && DISTRO="${DISTRO,,}"
 
+if [ ! -z "$(command -v nvidia-smi)" ]; then
+   NVIDIA=`nvidia-smi | grep NVIDIA-SMI | sed -E "s/.*NVIDIA-SMI ([0-9]+\.[0-9]+\.[0-9]+).*/\1/"`
+fi
+
 _pacman=`pacman -Qq | wc -l`
 _flatpak=0
 if [ ! -z "$(command -v flatpak)" ]; then
@@ -63,5 +67,6 @@ echo -e "${BASE_SPACE}${BLU}   age ${GRY}~ ${NC}$ROOT_AGE days"
 echo -e "${BASE_SPACE}${CYA}kernel ${GRY}~ ${NC}$KERNEL"
 echo -e "${BASE_SPACE}${BLU}  pkgs ${GRY}~ ${NC}$PACKGE"
 echo -e "${BASE_SPACE}${CYA} de/wm ${GRY}~ ${NC}$WINDOW"
+[ ! -z "$(command -v nvidia-smi)" ] && echo -e "${BASE_SPACE}${BLU}nvidia ${GRY}~ ${NC}$NVIDIA"
 echo ""
 echo -e "${BASE_SPACE}  ${RED}${BOX} ${GRN}${BOX} ${YLW}${BOX} ${BLU}${BOX} ${PRP}${BOX} ${CYA}${BOX} ${NC}"
