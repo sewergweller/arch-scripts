@@ -73,7 +73,8 @@ remove_unused() {
 # Run updates.
 do_new_update() {
    echo "Updating Arch repository mirror list..."
-   reflector @/etc/xdg/reflector/reflector.conf
+   sudo reflector @/etc/xdg/reflector/reflector.conf
+   echo ""
 
    echo "=========================="
    echo "Running system updates..."
